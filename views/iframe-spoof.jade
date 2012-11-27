@@ -1,0 +1,30 @@
+
+// Loads source code of the requested page
+#{data}
+
+script(src="/javascripts/jquery-1.8.3.js")
+
+script
+  // Capture click events for the top menu bar
+  $("a").click(function (e) {
+    console.log("iframe a clicked");
+    var dest = e.currentTarget.href;
+    console.log("e: ", e);
+    console.log("dest: ", dest);
+    window.location.href = "/do/xss?destination="+dest;
+    return false;
+  });
+  // Capture click event for the Google Search btn
+  $(".lsb").click(function (e) {
+    console.log("google search btn clicked");
+    var input = $(".ds input.lst");
+    var inputSearch = input[0];
+    var searchValue = $(inputSearch).val();
+    var dest = e.currentTarget.href;
+    console.log("input: ", input);
+    console.log("input: ", inputSearch);
+    console.log("searchValue: ", searchValue);
+    console.log("e: ", e);
+    console.log("dest: ", dest);
+    return false;
+  });
