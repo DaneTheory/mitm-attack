@@ -26,9 +26,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.iframe);
-
-app.get("/iframe/spoof", routes.iframe);
+app.get('/', routes.xss);
 
 app.get('/do/xss', routes.xss);
 

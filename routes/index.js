@@ -2,57 +2,44 @@ var jsdom   = require('jsdom')
   , request = require('request')
   , url     = require('url');
 
-// Loads home page of victims
-exports.iframe = function(req, res){
-  console.log("iframe route");
-  request({uri: 'http://google.ca'}, function(err, response, body){
-    //Just a basic error check
-    if (err && response.statusCode !== 200) {
-      console.log('Request error.');
-    }
-    res.render('iframe-spoof', {
-      title: 'Iframe',
-      data: body
-    });
-  });
-};
-
-
 // Navigation route
 exports.xss = function(req, res){
   console.log("xss route");
-  var target = req.query["destination"];
+
+  var target = req.query["destination"] || "http://google.ca";
   console.log("target: ", target);
+
   request({uri: target}, function(err, response, body){
-    console.log("err: ", err);
-    // console.log("response: ", response);
-    // console.log("body: ", body);
-    //Just a basic error check
     if (err && response.statusCode !== 200) {
       console.log('Request error.');
+      console.log("err: ", err);
     }
+
+    // Resolve relative paths    
+    body = body.replace(RegExp("\/images\/srpr\/nav_logo80.png","g"),
+      "http://google.ca/images/srpr/nav_logo80.png");
+    body = body.replace(RegExp("\/intl\/en_ALL\/images\/logos\/images_logo_lg.gif","g"),
+      "http://google.ca/intl/en_ALL/images/logos/images_logo_lg.gif");
+    body = body.replace(RegExp("\/images\/srpr\/logo1w.png","g"), "http://google.ca/images/srpr/logo1w.png");
+    body = body.replace(RegExp("\/images\/nav_logo115.png","g"), "http://google.ca/images/nav_logo115.png");
+    body = body.replace(RegExp("\/images\/nav_logo_hp2.png","g"), "http://google.ca/images/nav_logo_hp2.png");
+    body = body.replace(RegExp("/xjs/_/js/hp/sb_he,pcc/rt=j/ver=Q_cOygzMvpQ.en_US./d=1/sv=1/rs=AItRSTOgJyyZkvMii1rmCgNDNAM4bjLPiA","g"),
+      "http://google.ca/xjs/_/js/hp/sb_he,pcc/rt=j/ver=Q_cOygzMvpQ.en_US./d=1/sv=1/rs=AItRSTOgJyyZkvMii1rmCgNDNAM4bjLPiA");
+        
+    // Parses head markup
+    var head = body.split("<head>", 2);
+    head = head[1].split("</head>", 2);
+
+    // Parses body markup
+    var bodyData = body.split("<body", 2);
+    bodyData = bodyData[1].split("</body>", 2);
+    bodyData[0] = "<body " + bodyData[0];
 
     res.render('iframe-spoof', {
       title: 'Iframe',
-      data: body
+      head: head[0],
+      body: bodyData[0]
     });
-
-    //Send the body param as the HTML code we will parse in jsdom
-    //also tell jsdom to attach jQuery in the scripts and loaded from jQuery.com
-    // jsdom.env({
-    //   html: body,
-    //   scripts: ['http://code.jquery.com/jquery-1.6.min.js']
-    //   }, function (err, window) {
-    //   //Use jQuery just as in a regular HTML page
-    //   var $ = window.jQuery;
-    //   // var $body = $("body");
-    //   // console.log("\n\nbody*************************\n\n");
-    //   // console.log($body);
-    //   // res.render('iframe-spoof', {
-    //   //   title: 'Iframe',
-    //   //   data: $body
-    //   // });
-    // });
 
   });
 };
