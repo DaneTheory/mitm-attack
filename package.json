@@ -9,6 +9,7 @@
     "express": "3.0.3",
     "jade": "*",
     "request": "2.12.0",
-    "jsdom": "0.2.19"
+    "jsdom": "0.2.19",
+    "socket.io": "*"
   }
 }
