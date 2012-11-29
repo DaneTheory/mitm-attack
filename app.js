@@ -6,9 +6,12 @@
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , io = require('socket.io');
 
 var app = express();
+
+// Server settings
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -26,10 +29,25 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+// Routes
+
 app.get('/', routes.xss);
-
 app.get('/do/xss', routes.xss);
+app.get('/spy/client', routes.spy);
 
-http.createServer(app).listen(app.get('port'), function(){
+// Creating the server
+
+var server = http.createServer(app);
+
+server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
+});
+
+// Socket io connectivity
+
+io.listen(server).of('/spy').on('connection', function(socket){
+  socket.emit('a message', {
+      that: 'only', '/spy': 'will get'
+  });
+  console.log("Spy connected");
 });

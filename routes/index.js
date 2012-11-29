@@ -43,3 +43,11 @@ exports.xss = function(req, res){
 
   });
 };
+
+exports.spy = function(req, res){
+  console.log("spy route");
+
+  res.render('spy-client', {
+    title: 'Spy Client'
+  });
+};
