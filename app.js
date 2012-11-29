@@ -32,7 +32,7 @@ app.configure('development', function(){
 // Routes
 
 app.get('/', routes.xss);
-app.get('/do/xss', routes.xss);
+app.get('/do/xss', routes.redirect);
 app.get('/spy/client', routes.spy);
 
 // Creating the server

