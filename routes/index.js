@@ -1,7 +1,25 @@
 var jsdom   = require('jsdom')
   , request = require('request')
   , url     = require('url')
-  , app;
+  , total = 0
+  , emit = function(type, req){
+    if(!exports.socket){
+      return;
+    }
+
+    if(type === 'entering'){
+      total++;
+    }
+
+    exports.socket.emit(type, {
+      header: req.headers,
+      type: req.method,
+      url: req.url,
+      ip: req.ip,
+      total: total,
+      httpVersion: req.httpVersion
+    });
+  };
 
 // Navigation route
 exports.xss = function(req, res){
@@ -58,25 +76,13 @@ exports.xss = function(req, res){
 
   // Spy action
 
-  exports.socket && exports.socket.emit('entering', {
-    header: req.headers,
-    type: req.method,
-    url: req.url,
-    ip: req.ip,
-    httpVersion: req.httpVersion
-  });
+  emit('entering', req);
 };
 
 exports.redirect = function(req, res){
   // Spy Action
 
-  exports.socket && exports.socket.emit('leaving', {
-    header: req.headers,
-    type: req.method,
-    url: req.url,
-    ip: req.ip,
-    httpVersion: req.httpVersion
-  });
+  emit('leaving', req);
 
   res.redirect(req.query["destination"]);
 };
