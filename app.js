@@ -45,8 +45,8 @@ server.listen(app.get('port'), function(){
 
 // Socket io connectivity
 
-io.listen(server).of('/spy').on('connection', function(socket){
-  socket.emit('a message', {
+var spy = io.listen(server).of('/spy').on('connection', function(socket){
+  spy.emit('a message', {
       that: 'only', '/spy': 'will get'
   });
   console.log("Spy connected");

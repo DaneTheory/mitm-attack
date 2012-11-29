@@ -1,5 +1,9 @@
 var spy = io.connect('http://localhost/spy');
   
 spy.on('connect', function () {
-  chat.emit('hi!');
+  console.log("ASDASD");
 });
+
+spy.on('a message', function(data){
+  console.log(data);
+})
