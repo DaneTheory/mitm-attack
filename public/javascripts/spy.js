@@ -1,9 +1,9 @@
 var spy = io.connect('http://localhost/spy');
   
-spy.on('connect', function () {
-  console.log("ASDASD");
+spy.on('connect', function(){
+  console.log("Spy Client Connected");
 });
 
-spy.on('a message', function(data){
-  console.log(data);
-})
+spy.on('data', function(data){
+  console.log(JSON.stringify(data));
+});

@@ -45,9 +45,10 @@ server.listen(app.get('port'), function(){
 
 // Socket io connectivity
 
-var spy = io.listen(server).of('/spy').on('connection', function(socket){
-  spy.emit('a message', {
-      that: 'only', '/spy': 'will get'
-  });
-  console.log("Spy connected");
+var spy = io.listen(server).of('/spy');
+
+spy.on('connection', function(socket){
+  console.log("Spy Client Connected");
 });
+
+routes.socket = spy;

