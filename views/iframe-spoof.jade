@@ -12,7 +12,7 @@ html
         $("a").click(function (e) {
           console.log("a element clicked");
           var dest = e.currentTarget.href;
-          window.location.href = "/do/xss?destination="+dest;
+          window.location.href = "/redirect?destination="+dest;
           return false;
         });
         // Capture click event for the Google Search btn
@@ -32,8 +32,7 @@ html
           console.log("searchValue: ", searchValue);
           console.log("e: ", e);
           console.log("dest: ", dest);
-          url = "http://www.google.ca/search?q="+searchValue;
-          window.location.href = "/do/xss?destination="+url;
+          window.location.href = "/redirect?searchValue="+searchValue;
           return false;
         });
         // Add google's domain for logo
@@ -61,7 +60,7 @@ html
           imgUrl = "http://google.ca" + imgUrl[1];
           img.src = imgUrl;
         };  
-        changeDomain();
+        // changeDomain();
       });
     
 

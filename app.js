@@ -14,7 +14,7 @@ var app = express();
 // Server settings
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -32,7 +32,7 @@ app.configure('development', function(){
 // Routes
 
 app.get('/', routes.xss);
-app.get('/do/xss', routes.redirect);
+app.get('/redirect', routes.redirect);
 app.get('/spy/client', routes.spy);
 
 // Creating the server

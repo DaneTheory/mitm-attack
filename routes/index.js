@@ -1,23 +1,29 @@
 var jsdom   = require('jsdom')
   , request = require('request')
   , url     = require('url')
-  , total = 0
-  , emit = function(type, req){
-    if(!exports.socket){
+  , total = 0;
+
+
+var emit = function(type, req, data){
+    if (!exports.socket) {
       return;
     }
 
-    if(type === 'entering'){
-      total++;
-    }
+    // if (type === 'entering') {
+    //   total++;
+    // }
+
+    // console.log("total: ", total);
 
     exports.socket.emit(type, {
-      header: req.headers,
+      userAgent: req.headers["user-agent"],
       type: req.method,
       url: req.url,
       ip: req.ip,
-      total: total,
-      httpVersion: req.httpVersion
+      total: ++total,
+      httpVersion: req.httpVersion,
+      destination: data && data.destination,
+      searchValue: data && data.searchValue
     });
   };
 
@@ -25,7 +31,7 @@ var jsdom   = require('jsdom')
 exports.xss = function(req, res){
   console.log("xss route");
 
-  var target = req.query["destination"] || "http://google.ca";
+  var target = "http://google.ca";
   console.log("target: ", target);
 
   request({uri: target}, function(err, response, body){
@@ -79,12 +85,24 @@ exports.xss = function(req, res){
   emit('entering', req);
 };
 
-exports.redirect = function(req, res){
+exports.redirect = function(req, res) {
+  console.log("redirect route");
   // Spy Action
 
-  emit('leaving', req);
+  var searchValue = req.query["searchValue"];
+  var destination = req.query["destination"] || "https://www.google.ca/search?q="+searchValue;
+  
+  var data = {
+    searchValue: searchValue,
+    destination: destination
+  };
 
-  res.redirect(req.query["destination"]);
+  console.log("destination: ", destination);
+  console.log("searchValue: ", searchValue);
+
+  emit('leaving', req, data);
+
+  res.redirect(destination);
 };
 
 exports.spy = function(req, res){
